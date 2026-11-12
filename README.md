@@ -1,6 +1,6 @@
 ## 과제 02 
 
-### 행사 신청·승인 서비스의 업무 규칙과 트랜잭션을 구현
+### 행사 신청·승인 서비스의 업무 규칙과 트랜잭션 구현
 #### 과제 보고서 [report.pdf](docs/report.pdf)
 
 ### 1. 프로젝트와 실행 방법
@@ -178,5 +178,5 @@ APPROVED 신청만 정원에 포함합니다. 직접 승인 트랜잭션 안에�
 ### 4. 검증 범위와 AI 활용
 
 - 검증은 Node.js v24.22.3에서 수행했습니다. 테스트와 화면 검증은 임시 DB를 사용했고 저장소의 기본 DB는 변경하지 않았습니다.
-- **AI 활용:** Codex를 사용해 `application-service.js`의 `apply`, `cancel`, `approve`, `revoke`와 트랜잭션 처리, `repository.js`의 대기열 조회를 구현했습니다. README·검증 기록·보고서 작성에도 AI를 활용했습니다.
+- **AI 활용:** Codex를 사용해 `application-service.js`의 `apply`, `cancel`, `approve`, `revoke`와 트랜잭션 처리, `repository.js`의 대기열 조회를 구현했습니다. README·검증 시나리오·보고서 초안 작성에도 AI를 활용했습니다.
 - 기반·필수·심화 테스트, 추가 두 서버 경쟁 검사, U01~U05 화면 흐름을 실행하고 결과를 증거 파일로 남겼습니다. 테스트 명령과 화면 검증 결과는 이 README와 증거 문서에 정리했습니다.
