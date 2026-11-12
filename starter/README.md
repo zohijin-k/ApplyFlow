@@ -19,7 +19,7 @@ npm start
 연습 계정은 `alice`, `bob`, `charlie`, `manager1`, `manager2`이며 모두 가상 계정이고 비밀번호는 `Classroom123!`입니다.
 
 - [API 안내](docs/API.md)
-- [보고서 PDF](docs/202413123.pdf)
+- [보고서 PDF](docs/report.pdf)
 - [테스트 결과](docs/evidence/test-results.md)
 - [화면 검증 기록](docs/evidence/screen-verification.md)
 - [검증 캡처](docs/evidence/screenshots/)
