@@ -135,6 +135,30 @@ U01~U05는 임시 SQLite DB와 headless Chrome에서 실행했습니다. 각 흐
 | U04 | 행사 2에서 세 학생 신청 → Alice 승인 취소 → Bob 승급·Charlie 대기 및 원인 이력 확인 | PASS |
 | U05 | 대기자 없는 승인 취소 → REVOKED, 승인 인원 0, `promoted=null` 확인 | PASS |
 
+##### 화면 캡처
+
+캡처는 데스크톱 가로 화면(1920 × 1300)으로 다시 촬영했습니다. 이미지를 누르면 원본 크기로 확인할 수 있습니다.
+
+**U01 · 학생 신청과 담당 운영자 승인**
+
+![U01 학생 신청 후 담당 운영자 승인 화면](starter/docs/evidence/screenshots/U01-student-application-manager-approval.png)
+
+**U02 · 취소된 신청에 대한 오래된 화면의 승인 요청 거부**
+
+![U02 오래된 운영자 화면의 승인 요청 거부](starter/docs/evidence/screenshots/U02-stale-manager-approval-rejected.png)
+
+**U03 · 서버 재시작 후 상태와 이력 유지**
+
+![U03 서버 재시작 후 상태와 이력 유지](starter/docs/evidence/screenshots/U03-state-history-after-server-restart.png)
+
+**U04 · FIFO 자동 승급과 원인 이력 연결**
+
+![U04 FIFO 자동 승급과 원인 이력 연결](starter/docs/evidence/screenshots/U04-fifo-promotion-history.png)
+
+**U05 · 대기자 없는 승인 취소**
+
+![U05 대기자 없는 승인 취소](starter/docs/evidence/screenshots/U05-no-waiter-empty-capacity.png)
+
 ### 3. 트랜잭션과 동시성 개념
 
 #### 3-1. 단일 상태 변경 트랜잭션
