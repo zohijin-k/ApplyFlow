@@ -2,16 +2,15 @@
 
 행사 신청·승인 서비스의 업무 규칙과 트랜잭션을 구현한 웹서비스설계 과제 2 프로젝트입니다.
 
-#### 과제 보고서 [report.pdf](starter/docs/report.pdf)
+#### 과제 보고서 [report.pdf](docs/report.pdf)
 
 ### 1. 프로젝트와 실행 방법
 
 ApplyFlow는 행사 신청과 운영자 승인을 처리하는 웹서비스설계 과제 2 구현입니다. 학생은 행사에 신청하고 본인의 대기 신청을 취소할 수 있습니다. 담당 운영자는 신청을 승인하거나 사유를 입력해 승인을 취소합니다. 승인 취소로 자리가 나면 같은 행사에서 가장 먼저 대기한 신청 한 건을 자동 승인합니다. 상태 변경과 변경 이력은 SQLite 트랜잭션으로 함께 저장합니다.
 
-Node.js **24.x**와 npm을 사용합니다. 별도 데이터베이스 서버는 필요하지 않습니다. 저장소 루트에서 시작할 때 먼저 `starter` 폴더로 이동하세요.
+Node.js **24.x**와 npm을 사용합니다. 별도 데이터베이스 서버는 필요하지 않습니다. 저장소를 복제한 뒤 저장소 루트에서 실행합니다.
 
 ```bash
-cd starter
 node --version
 npm ci
 npm test
@@ -51,7 +50,7 @@ npm run db:reset
 
 ### 2. 과제 요구사항
 
-아래 표는 구현 범위와 검증 증거를 요약합니다. 개별 테스트의 입력과 실제 결과는 [테스트 결과](starter/docs/evidence/test-results.md)에 기록했습니다.
+아래 표는 구현 범위와 검증 증거를 요약합니다. 개별 테스트의 입력과 실제 결과는 [테스트 결과](docs/evidence/test-results.md)에 기록했습니다.
 
 | 평가 항목 | 구현·확인할 내용 | 검증 요약 |
 | :--- | :--- | :--- |
@@ -67,7 +66,7 @@ npm run db:reset
 
 - `POST /api/events/:id/applications`는 행사를 확인하고 로그인한 학생의 기존 신청 여부를 검사한 뒤 PENDING 신청과 APPLY 이력을 저장합니다. 성공 응답은 201과 Location 헤더를 반환합니다.
 - `POST /api/applications/:id/cancel`은 신청자 본인의 PENDING 상태만 CANCELLED로 바꾸고 CANCEL 이력을 저장합니다. 대기 취소는 승인 자리를 비우지 않으므로 자동 승급을 실행하지 않습니다.
-- 신청·취소 모두 상태 변경과 이력 저장을 같은 트랜잭션으로 처리합니다. 관련 구현은 `starter/src/application-service.js`의 `apply()`와 `cancel()`입니다.
+- 신청·취소 모두 상태 변경과 이력 저장을 같은 트랜잭션으로 처리합니다. 관련 구현은 `src/application-service.js`의 `apply()`와 `cancel()`입니다.
 
 #### 2-2. 직접 승인과 정원
 
@@ -76,7 +75,7 @@ npm run db:reset
 - 담당 운영자만 해당 행사 신청을 승인할 수 있습니다. 다른 역할이나 다른 행사의 운영자는 403으로 거부합니다.
 - 승인 대상은 매 요청마다 DB에서 다시 읽어 PENDING인지 확인합니다. 오래된 화면에서 이미 취소된 신청을 승인하려 하면 409 `INVALID_STATE`를 반환합니다.
 - 승인 인원은 APPROVED 상태만 세며, 정원이 찬 경우 409 `CAPACITY_FULL`로 거부합니다. 승인 상태와 APPROVE 이력은 하나의 트랜잭션으로 저장합니다.
-- 구현은 `starter/src/application-service.js`의 `approve()`와 `starter/src/repository.js`의 `approvedCount()`를 확인하세요.
+- 구현은 `src/application-service.js`의 `approve()`와 `src/repository.js`의 `approvedCount()`를 확인하세요.
 
 #### 2-3. 승인 취소와 자동 승급
 
@@ -85,7 +84,7 @@ npm run db:reset
 - 승인 취소 본문은 `{"reason":"운영 사정으로 승인 취소"}` 형식입니다. 앞뒤 공백을 제거한 문자열 길이가 5~200자여야 하며 추가 필드는 허용하지 않습니다.
 - 담당 운영자가 APPROVED 신청을 REVOKED로 바꾸고 REVOKE 이력을 저장합니다. 이어 같은 행사에서 PENDING 신청 한 건을 `created_at ASC, id ASC` 순서로 선택해 APPROVED로 승급합니다.
 - 자동 승급 이력의 actorId는 승인 취소를 요청한 운영자 ID이고 `causeHistoryId`는 해당 REVOKE 이력 ID입니다. 대기자가 없으면 `promoted`는 null이며 승인 인원은 감소한 상태로 유지됩니다.
-- 승인 취소·REVOKE 이력·대기자 선택·승급·AUTO_APPROVE 이력은 `starter/src/application-service.js`의 `revoke()`에서 한 트랜잭션으로 처리합니다. 대기자 선택 SQL은 `starter/src/repository.js`의 `nextPending()`입니다.
+- 승인 취소·REVOKE 이력·대기자 선택·승급·AUTO_APPROVE 이력은 `src/application-service.js`의 `revoke()`에서 한 트랜잭션으로 처리합니다. 대기자 선택 SQL은 `src/repository.js`의 `nextPending()`입니다.
 
 #### 2-4. 변경 이력과 롤백
 
@@ -105,7 +104,7 @@ COMMIT
 
 승인 취소와 자동 승급은 REVOKE와 AUTO_APPROVE를 포함한 전체 흐름을 하나의 트랜잭션으로 처리합니다. 상태 저장 또는 이력 INSERT 중 하나라도 실패하면 신청 상태와 이력 모두 요청 전 데이터로 돌아갑니다.
 
-T28~T30은 테스트용 SQLite trigger로 APPLY, APPROVE, CANCEL, REVOKE, AUTO_APPROVE 이력 저장을 실패시켜 500 응답과 전체 롤백을 확인합니다. 세부 오류 주입 방법과 전후 상태는 [롤백 검증](starter/docs/evidence/rollback-verification.md)에 기록했습니다.
+T28~T30은 테스트용 SQLite trigger로 APPLY, APPROVE, CANCEL, REVOKE, AUTO_APPROVE 이력 저장을 실패시켜 500 응답과 전체 롤백을 확인합니다. 세부 오류 주입 방법과 전후 상태는 [롤백 검증](docs/evidence/rollback-verification.md)에 기록했습니다.
 
 #### 2-5. 테스트 및 화면 검증
 
@@ -125,7 +124,7 @@ Node.js v24.22.3에서 `npm ci` 후 다음 결과를 확인했습니다.
 
 ##### 화면 검증 및 캡처
 
-U01~U05는 임시 SQLite DB와 headless Chrome에서 실행했습니다. 각 흐름의 전체 캡처는 [screenshots](starter/docs/evidence/screenshots/) 폴더에, 결과 설명은 [화면 검증 기록](starter/docs/evidence/screen-verification.md)에 있습니다.
+U01~U05는 임시 SQLite DB와 headless Chrome에서 실행했습니다. 각 흐름의 전체 캡처는 [screenshots](docs/evidence/screenshots/) 폴더에, 결과 설명은 [화면 검증 기록](docs/evidence/screen-verification.md)에 있습니다.
 
 | ID | 확인한 흐름 | 결과 |
 | :--- | :--- | :--- |
@@ -141,23 +140,23 @@ U01~U05는 임시 SQLite DB와 headless Chrome에서 실행했습니다. 각 흐
 
 **U01 · 학생 신청과 담당 운영자 승인**
 
-![U01 학생 신청 후 담당 운영자 승인 화면](starter/docs/evidence/screenshots/U01-student-application-manager-approval.png)
+![U01 학생 신청 후 담당 운영자 승인 화면](docs/evidence/screenshots/U01-student-application-manager-approval.png)
 
 **U02 · 취소된 신청에 대한 오래된 화면의 승인 요청 거부**
 
-![U02 오래된 운영자 화면의 승인 요청 거부](starter/docs/evidence/screenshots/U02-stale-manager-approval-rejected.png)
+![U02 오래된 운영자 화면의 승인 요청 거부](docs/evidence/screenshots/U02-stale-manager-approval-rejected.png)
 
 **U03 · 서버 재시작 후 상태와 이력 유지**
 
-![U03 서버 재시작 후 상태와 이력 유지](starter/docs/evidence/screenshots/U03-state-history-after-server-restart.png)
+![U03 서버 재시작 후 상태와 이력 유지](docs/evidence/screenshots/U03-state-history-after-server-restart.png)
 
 **U04 · FIFO 자동 승급과 원인 이력 연결**
 
-![U04 FIFO 자동 승급과 원인 이력 연결](starter/docs/evidence/screenshots/U04-fifo-promotion-history.png)
+![U04 FIFO 자동 승급과 원인 이력 연결](docs/evidence/screenshots/U04-fifo-promotion-history.png)
 
 **U05 · 대기자 없는 승인 취소**
 
-![U05 대기자 없는 승인 취소](starter/docs/evidence/screenshots/U05-no-waiter-empty-capacity.png)
+![U05 대기자 없는 승인 취소](docs/evidence/screenshots/U05-no-waiter-empty-capacity.png)
 
 ### 3. 트랜잭션과 동시성 개념
 
@@ -167,7 +166,7 @@ U01~U05는 임시 SQLite DB와 headless Chrome에서 실행했습니다. 각 흐
 
 #### 3-2. 승인 취소 트랜잭션
 
-승인 취소는 REVOKED 변경과 REVOKE 이력만 먼저 COMMIT하지 않습니다. 정렬된 대기자 선택, 승급 상태 변경, AUTO_APPROVE 이력 저장이 모두 성공한 뒤 한 번에 COMMIT합니다. 중간 단계가 실패하면 전체 ROLLBACK합니다. 순서도와 SQL 근거는 [과제 보고서](starter/docs/report.pdf)에 정리했습니다.
+승인 취소는 REVOKED 변경과 REVOKE 이력만 먼저 COMMIT하지 않습니다. 정렬된 대기자 선택, 승급 상태 변경, AUTO_APPROVE 이력 저장이 모두 성공한 뒤 한 번에 COMMIT합니다. 중간 단계가 실패하면 전체 ROLLBACK합니다. 순서도와 SQL 근거는 [과제 보고서](docs/report.pdf)에 정리했습니다.
 
 #### 3-3. 정원과 동시성
 
@@ -175,7 +174,7 @@ APPROVED 신청만 정원에 포함합니다. 직접 승인 트랜잭션 안에�
 
 #### 3-4. 영속성과 변경 이력
 
-신청 및 이력은 SQLite 파일에 저장됩니다. 서버를 재실행해도 데이터가 유지됩니다. `application_history`에는 신청 ID, 행위자, 행위, 변경 전·후 상태, 시각, reason, 원인 이력 ID를 기록합니다. DB 검증 쿼리와 결과는 [DB 검증 기록](starter/docs/evidence/database-verification.md)에 있습니다.
+신청 및 이력은 SQLite 파일에 저장됩니다. 서버를 재실행해도 데이터가 유지됩니다. `application_history`에는 신청 ID, 행위자, 행위, 변경 전·후 상태, 시각, reason, 원인 이력 ID를 기록합니다. DB 검증 쿼리와 결과는 [DB 검증 기록](docs/evidence/database-verification.md)에 있습니다.
 
 ### 4. 검증 범위와 AI 활용
 
